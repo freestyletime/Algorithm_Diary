@@ -405,9 +405,9 @@ If we know that the charset is rather small, we can replace the Map with an inte
 
 Commonly used tables are:
 
-int[26] for Letters 'a' - 'z' or 'A' - 'Z'
-int[128] for ASCII
-int[256] for Extended ASCII
+- int[26] for Letters 'a' - 'z' or 'A' - 'Z'
+- int[128] for ASCII
+- int[256] for Extended ASCII
 ```java
 public class Solution {
     public int lengthOfLongestSubstring(String s) {
