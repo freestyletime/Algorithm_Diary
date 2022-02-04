@@ -4,6 +4,7 @@
 1. Two Sum
 2. Add Two Numbers
 3. Palindrome Number
+4. Longest Substring Without Repeating Characters
 ---------------
 ## 1. Two Sum
 
@@ -104,7 +105,7 @@ Output: [8,9,9,9,0,0,0,1]
 ``
 
 ---------------
-### Approach 1: General Loop two list simultaneously
+### Approach 1: Generally Loop two list simultaneously
 
 The pseudocode is as following:
 - Initialize a interim node to represent the ListNode we will make.
@@ -121,8 +122,6 @@ The pseudocode is as following:
 - Initialize next node and let its value equals to **val**
 - Let the interim node point to the next node.
 - = = = Loop end = = =
-
-
 ```java
 /**
  * Definition for singly-linked list.
@@ -258,6 +257,182 @@ public bool IsPalindrome(int x) {
         // For example when the input is 12321, at the end of the while loop we get x = 12, revertedNumber = 123,
         // since the middle digit doesn't matter in palidrome(it will always equal to itself), we can simply get rid of it.
         return x == revertedNumber || x == revertedNumber/10;
+}
+```
+
+## 4. Longest Substring Without Repeating Characters
+
+Given a string **s**, find the length of the longest substring without repeating characters.
+
+Example 1:
+
+``
+Input: s = "abcabcbb"
+Output: 3
+Explanation: The answer is "abc", with the length of 3.
+``
+
+Example 2:
+
+``
+Input: s = "bbbbb"
+Output: 1
+Explanation: The answer is "b", with the length of 1.
+``
+
+Example 3:
+
+``
+Input: s = "pwwkew"
+Output: 3
+Explanation: The answer is "wke", with the length of 3.
+Notice that the answer must be a substring, "pwke" is a subsequence and not a substring.
+``
+
+---------------
+### Approach 1: Brute Force
+Check all the substring one by one to see if it has no duplicate character.
+```java
+public class Solution {
+    public int lengthOfLongestSubstring(String s) {
+        int n = s.length();
+
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = i; j < n; j++) {
+                if (checkRepetition(s, i, j)) {
+                    res = Math.max(res, j - i + 1);
+                }
+            }
+        }
+
+        return res;
+    }
+
+    private boolean checkRepetition(String s, int start, int end) {
+        int[] chars = new int[128];
+
+        for (int i = start; i <= end; i++) {
+            char c = s.charAt(i);
+            chars[c]++;
+            if (chars[c] > 1) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+}
+```
+
+### Approach 2: Sliding Window
+```java
+public class Solution {
+    public int lengthOfLongestSubstring(String s) {
+        int[] chars = new int[128];
+
+        int left = 0;
+        int right = 0;
+
+        int res = 0;
+        while (right < s.length()) {
+            char r = s.charAt(right);
+            chars[r]++;
+
+            while (chars[r] > 1) {
+                char l = s.charAt(left);
+                chars[l]--;
+                left++;
+            }
+
+            res = Math.max(res, right - left + 1);
+
+            right++;
+        }
+        return res;
+    }
+}
+```
+
+### Approach 2: Sliding Window Optimized
+
+**Solution 1:**
+```java
+public class Solution {
+    public int lengthOfLongestSubstring(String s) {
+        int n = s.length(), ans = 0;
+        Map<Character, Integer> map = new HashMap<>(); // current index of character
+        // try to extend the range [i, j]
+        for (int j = 0, i = 0; j < n; j++) {
+            if (map.containsKey(s.charAt(j))) {
+                i = Math.max(map.get(s.charAt(j)), i);
+            }
+            ans = Math.max(ans, j - i + 1);
+            map.put(s.charAt(j), j + 1);
+        }
+        return ans;
+    }
+}
+```
+
+
+**Solution 2:**
+```java
+class Solution {
+    public int lengthOfLongestSubstring(String s) {
+        int start = 0;
+        int max = 0;
+        StringBuilder tmp = new StringBuilder();
+        for(int i = 0; i < s.length(); i++) {
+            String c =  Character.toString(s.charAt(i));
+            int end = tmp.lastIndexOf(c);
+            if(end != -1) if(end >= start) start = end + 1;
+            
+            max = Math.max(max, i - start + 1);
+            tmp.append(c);
+        }
+        
+        return max;
+    }
+}
+```
+
+
+**Solution 3(Assuming ASCII 128):**
+The previous implements all have no assumption on the charset of the string **s**.
+
+If we know that the charset is rather small, we can replace the Map with an integer array as direct access table.
+
+Commonly used tables are:
+
+int[26] for Letters 'a' - 'z' or 'A' - 'Z'
+int[128] for ASCII
+int[256] for Extended ASCII
+```java
+public class Solution {
+    public int lengthOfLongestSubstring(String s) {
+        Integer[] chars = new Integer[128];
+
+        int left = 0;
+        int right = 0;
+
+        int res = 0;
+        while (right < s.length()) {
+            char r = s.charAt(right);
+
+            Integer index = chars[r];
+            if (index != null && index >= left && index < right) {
+                left = index + 1;
+            }
+
+            res = Math.max(res, right - left + 1);
+
+            chars[r] = right;
+            right++;
+        }
+
+        return res;
+    }
 }
 ```
 
