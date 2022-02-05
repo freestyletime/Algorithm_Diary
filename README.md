@@ -5,6 +5,9 @@
 2. Add Two Numbers
 3. Palindrome Number
 4. Longest Substring Without Repeating Characters
+5. Roman to Integer && Integer to Roman
+6. Longest Common Prefix
+7. Search Insert Position
 ---------------
 ## 1. Two Sum
 
@@ -435,6 +438,195 @@ public class Solution {
     }
 }
 ```
+
+## 5. Roman to Integer && Integer to Roman
+
+Create a RomanNumerals class that can convert a roman numeral to and from an integer value. It should follow the API demonstrated in the examples below. Multiple roman numeral values will be tested for each helper method.
+
+Modern Roman numerals are written by expressing each digit separately starting with the left most digit and skipping any digit with a value of zero. In Roman numerals 1990 is rendered: 1000=M, 900=CM, 90=XC; resulting in MCMXC. 2008 is written as 2000=MM, 8=VIII; or MMVIII. 1666 uses each Roman symbol in descending order: MDCLXVI.
+
+Example 1:
+
+``
+RomanNumerals.toRoman(1000) // should return 'M'
+RomanNumerals.fromRoman("M") // should return 1000
+``
+
+---------------
+### Approach: General Parse
+
+**Solution:**
+```java
+import java.util.LinkedHashMap;
+import java.util.Map.Entry;
+import java.util.Map;
+public class RomanNumerals {
+ 
+    static Map<String, Integer> nRM = new LinkedHashMap<>();
+    static {
+          nRM.put("M", 1000); nRM.put("CM", 900); nRM.put("D", 500); nRM.put("CD", 400);
+          nRM.put("C", 100); nRM.put("XC", 90); nRM.put("L", 50); nRM.put("XL", 40);
+          nRM.put("X", 10); nRM.put("IX", 9); nRM.put("V", 5); nRM.put("IV", 4); 
+          nRM.put("I", 1);
+    }
+
+    public static String toRoman(int n) {
+        StringBuffer sb = new StringBuffer();
+        for (Entry<String, Integer> entry : nRM.entrySet()) {
+            int base = n / entry.getValue();
+            n = n - base * entry.getValue();
+            if (base > 0) for (int x = 0; x < base; x++) sb.append(entry.getKey());
+            if (n == 0) break;
+        }
+        return sb.toString();
+    }
+
+    public static int fromRoman(String romanNumeral) {
+        int sum = 0;
+        for (Entry<String, Integer> entry : nRM.entrySet()) {
+            String base = entry.getKey();
+            int count = 0;
+            while(romanNumeral.startsWith(base)){
+                romanNumeral = romanNumeral.substring(base.length());
+                count += 1;
+            }
+            sum += count * entry.getValue();
+            if(romanNumeral.isEmpty()) break;
+        }
+        return sum;
+    }
+}
+```
+
+## 6. Longest Common Prefix
+
+Write a function to find the longest common prefix string amongst an array of strings.
+
+If there is no common prefix, return an empty string **""**.
+
+Example 1:
+
+``
+Input: strs = ["flower","flow","flight"]
+Output: "fl"
+``
+
+Example 2:
+
+``
+Input: strs = ["dog","racecar","car"]
+Output: ""
+Explanation: There is no common prefix among the input strings.
+``
+
+---------------
+### Approach 1: Horizontal scanning
+Suppose the first element in the array is the common prefix for all elements. Loop the array while cutting the common prefix till the end to check if the common prefix is valid for each element.
+```java
+public String longestCommonPrefix(String[] strs) {
+    String common = strs[0];
+    for (String str : strs) {
+        while(!str.	startsWith(common)){
+            if(common.isEmpty()) return common;
+            common = common.substring(0, common.length() - 1);
+        }
+    }
+    return common;
+}
+```
+
+
+### Approach 2: Vertical scanning
+Imagine a very short string is the common prefix at the end of the array. The above approach will still do S comparisons. One way to optimize this case is to do vertical scanning. We compare characters from top to bottom on the same column (same character index of the strings) before moving on to the next column.
+```java
+public String longestCommonPrefix(String[] strs) {
+    if (strs == null || strs.length == 0) return "";
+    for (int i = 0; i < strs[0].length() ; i++){
+        char c = strs[0].charAt(i);
+        for (int j = 1; j < strs.length; j ++) {
+            if (i == strs[j].length() || strs[j].charAt(i) != c)
+                return strs[0].substring(0, i);             
+        }
+    }
+    return strs[0];
+}
+```
+
+## 7. Search Insert Position
+Given a sorted array of distinct integers and a target value, return the index if the target is found. If not, return the index where it would be if it were inserted in order.
+
+You must write an algorithm with **O(log n)** runtime complexity.
+
+Example 1:
+
+``
+Input: nums = [1,3,5,6], target = 5
+Output: 2
+``
+
+Example 2:
+
+``
+Input: nums = [1,3,5,6], target = 2
+Output: 1
+``
+
+Example 3:
+
+``
+Input: nums = [1,3,5,6], target = 7
+Output: 4
+``
+
+---------------
+### Approach: Binary Search
+
+**solution 1:**
+```java
+class Solution {
+    public int searchInsert(int[] nums, int target) {
+        if (nums.length == 0) return -1;
+        int left = 0;
+        int right = nums.length;
+
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (nums[mid] == target) {
+                right = mid;
+            } else if (nums[mid] < target) {
+                left = mid + 1;
+            } else if (nums[mid] > target) {
+                right = mid;
+            }
+        }
+        return left;
+    }
+}
+```
+
+**solution 2:**
+```java
+class Solution {
+    public int searchInsert(int[] nums, int target) {
+        return searchInsert(nums, target, 0, nums.length - 1);
+    }
+    
+    public int searchInsert(int[] nums, int target, int start, int end) {
+        if(target <= nums[start]) return start;
+        else if(target == nums[end]) return end;
+        else if(target > nums[end]) return end + 1;
+        else if(start == end){
+            if(target > nums[start]) return start + 1; else return start;
+        }else{
+            int mid = (end + start + 1) / 2;
+            if(target == nums[mid]) return mid;
+            else if(target > nums[mid]) return searchInsert(nums, target, mid + 1, end);
+            else return searchInsert(nums, target, start, mid - 1);
+        }
+    }
+}
+```
+
 
 # LICENSE 
 MIT License
