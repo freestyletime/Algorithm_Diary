@@ -8,7 +8,7 @@
 5. [Roman to Integer && Integer to Roman](https://github.com/freestyletime/Algorithm_Diary#5-roman-to-integer--integer-to-roman)
 6. [Longest Common Prefix](https://github.com/freestyletime/Algorithm_Diary#6-longest-common-prefix)
 7. [Search Insert Position](https://github.com/freestyletime/Algorithm_Diary#7-search-insert-position)
-8. [Longest Palindromic Substring](https://github.com/freestyletime/Algorithm_Diary#7-longest-palindromic-substring)
+8. [Longest Palindromic Substring](https://github.com/freestyletime/Algorithm_Diary#8-longest-palindromic-substring)
 ---------------
 ## 1. Two Sum
 
