@@ -8,6 +8,7 @@
 5. [Roman to Integer && Integer to Roman](https://github.com/freestyletime/Algorithm_Diary#5-roman-to-integer--integer-to-roman)
 6. [Longest Common Prefix](https://github.com/freestyletime/Algorithm_Diary#6-longest-common-prefix)
 7. [Search Insert Position](https://github.com/freestyletime/Algorithm_Diary#7-search-insert-position)
+8. [Longest Palindromic Substring](https://github.com/freestyletime/Algorithm_Diary#7-longest-palindromic-substring)
 ---------------
 ## 1. Two Sum
 
@@ -626,6 +627,62 @@ class Solution {
     }
 }
 ```
+
+## 8. Longest Palindromic Substring
+Given a string **s**, return the longest palindromic substring in **s**.
+
+Example 1:
+
+``
+Input: s = "babad"
+Output: "bab"
+Explanation: "aba" is also a valid answer.
+``
+
+Example 2:
+
+``
+Input: s = "cbbd"
+Output: "bb"
+``
+
+---------------
+### Approach 1: Brute Force
+Some people will be tempted to come up with a quick solution, which is unfortunately flawed (however can be corrected easily):
+
+```java
+class Solution {
+    
+    public boolean isPalindrome(String s){
+        for(int i = 0; i< s.length() / 2; i ++) 
+            if(s.charAt(i) != s.charAt(s.length() - i - 1)) 
+                return false;
+        return true;
+    }
+    
+    public String longestPalindrome(String s) {
+        for(int i = 0; i < s.length(); i++) {
+            int step = s.length() - i;
+            int start= 0;
+            int end  = step;
+            while(end <= s.length()){
+                String x = s.substring(start++, end++);
+                if(isPalindrome(x)) return x;
+            }
+        }
+        return "";
+    }
+}
+```
+
+### Approach 2: Longest Common Substring
+Reverse S and become S'
+Find the longest common substring between S and S', which must also be the longest palindromic substring.
+
+This seemed to work, let’s see some examples below.
+
+For example, S = "caba", S'= "abac".
+The longest common substring between S and S' is "aba", which is the answer.
 
 
 # LICENSE 
